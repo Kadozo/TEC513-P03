@@ -10,6 +10,7 @@ f = (0:length(y)-1)*(duration)/length(y); % vetor de frequências
 plot(f,y); % Plotando
 xlabel('Tempo (S)'); % adiciona rótulo ao eixo y
 ylabel('Amplitude'); % adiciona rótulo ao eixo y
+ylim([-3,3])
 
 
 
