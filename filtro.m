@@ -1,7 +1,7 @@
 
 clear; close all; clc;
-
 import signal.*;
+
 
 % Lendo um arquivo de áudio
 [y, Fs] = audioread('SinalRuidoso.wav');
@@ -32,25 +32,30 @@ grid on;
 % Iniciando o processo de filtragem
 
 % Dados do Projeto ==============================
-M = length(y); %Comprimento do Filtro
-wc = 0.23; %Frequência de Corte Normalizada (f1+f2)/2
+%M = length(y); %Comprimento do Filtro
+%wc = 0.23; %Frequência de Corte Normalizada (f1+f2)/2
 % ================================================
-n = (0:M-1);
+%n = (0:M-1);
 
 %w = (1-cos((2*pi*n)/(M-1)))'*0.5; %Janela de Hannning
 
 %Passa-Baixas:
 fc = 3000;
-%Y_filtered = Y;
-%Y_filtered((fc/Fs)*length(yw)+1:end-(fc/Fs)*length(yw)) = 0;
-%y_filtered = ifft(Y_filtered);
 
-wn = fc/(Fs/2);
-aten_min = 3;
-aten_max = 80;
-[n, Wn] = buttord(wn, wn*1.5, aten_min, aten_max, 's');
-[b, a] = butter(n, Wn);
-y_filtered = filter(b, a, xt);
+% % Definir parâmetros do filtro
+N = 23; % Comprimento do filtro
+
+w = 0.54 - 0.46*cos(2*pi*(0:N-1)/(N-1));
+
+% Filtro passa-baixas ideal, se conseguir usando a sinc o código fica mais
+% bonito
+ideal_lp = 2*fc/Fs * (sin(pi*(2*fc/Fs*(-(N-1)/2:(N-1)/2))) / (pi*(2*fc/Fs*(-(N-1)/2:(N-1)/2))));
+
+h = ideal_lp .* w';
+
+h = h / sum(h);
+
+y_filtered = filter(h, 1, y);
 
 %Tocando o áudio
 sound(y_filtered, Fs);

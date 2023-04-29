@@ -1,5 +1,6 @@
 
 clear; close all; clc;
+import signal.*;
 
 
 % Lendo um arquivo de áudio
@@ -31,19 +32,37 @@ grid on;
 % Iniciando o processo de filtragem
 
 % Dados do Projeto ==============================
-M = length(y); %Comprimento do Filtro
-wc = 0.23; %Frequência de Corte Normalizada (f1+f2)/2
+%M = length(y); %Comprimento do Filtro
+%wc = 0.23; %Frequência de Corte Normalizada (f1+f2)/2
 % ================================================
-n = (0:M-1);
+%n = (0:M-1);
 
 %w = (1-cos((2*pi*n)/(M-1)))'*0.5; %Janela de Hannning
 
 %Passa-Baixas:
-fc = 3000;
-Y_filtered = Y;
-Y_filtered(0)
-%Y_filtered((fc/Fs)*length(yw)+1:end-(fc/Fs)*length(yw)) = 0;
-y_filtered = ifft(Y_filtered);
+fc = 10000000;
+
+% % Definir parâmetros do filtro
+N = 42; % Comprimento do filtro
+% 
+% % Calcular coeficientes do filtro Hamming
+% n = 0:N-1;
+% w = 0.54 - 0.46*cos(2*pi*n/(N-1));
+% 
+% % Normalizar coeficientes do filtro
+% w = w / sum(w);
+% 
+% % Calcular a resposta em frequência do filtro
+% H = fft(w);
+% 
+% % Aplicar filtro ao sinal de entrada
+% y_filtered = conv(y, w, 'same');
+
+w = 0.54 - 0.46*cos(2*pi*(0:N-1)/(N-1));
+ideal_lp = 2*Fc/Fs * (sin(pi*(2*Fc/Fs*(-(N-1)/2:(N-1)/2))) / (pi*(2*Fc/Fs*(-(N-1)/2:(N-1)/2))));
+h = ideal_lp .* w';
+h = h / sum(h);
+y_filtered = filter(h, 1, y);
 
 %Tocando o áudio
-%sound(y_filtered, Fs);
+sound(y_filtered, Fs);
