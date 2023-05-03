@@ -21,8 +21,8 @@ grid on
 %Plotando o sinal ruidoso na frequência
 Y = fft(y); 
 fVals =(-length(Y)/2:length(Y)/2-1);
-figure('Name','Sinal com Ruido na frequencia'); 
-func_plotter_freq("$f$(Hz)", "Magnitude", "Espectro do sinal de entrada filtrado", Y', Fs, fVals);
+figure('Name','Sinal com ruido na frequencia'); 
+func_plotter_freq("$f$(Hz)", "Magnitude", "Espectro do sinal com ruido na frequencia", Y', Fs, fVals);
 grid on;
 
 %Iniciando o processo de filtragem======================
