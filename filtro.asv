@@ -1,7 +1,7 @@
 
 clear; close all; clc;
 import signal.*;
-
+load handel.mat
 
 % Lendo um arquivo de áudio
 [y, Fs] = audioread('SinalRuidoso.wav');
@@ -24,9 +24,7 @@ Y = fft(y);
 %f = (0:length(Y)-1)*(Fs/length(Y));
 fVals =(-length(Y)/2:length(Y)/2-1);
 figure('Name','Sinal com Ruido na frequência'); 
-plot(fVals,abs(fftshift(Y)));
-xlabel('Frequência (Hz)');
-ylabel('Magnitude');
+func_plotter_freq("$f$(Hz)", "Magnitude", "Espectro do sinal de entrada filtrado", Y', Fs, fVals);
 grid on;
 
 % Iniciando o processo de filtragem
@@ -39,30 +37,52 @@ grid on;
 
 %w = (1-cos((2*pi*n)/(M-1)))'*0.5; %Janela de Hannning
 
-%Passa-Baixas:
-fc = 10000000;
+fr = 4000;%Frequencia de rejeicao
+fa = 2600;%Frequencia de atenuacao
+ft = fr - fa;%Frequencia de transicao
+fc = (fr+fa)/2;%Frequencia de corte
 
-% % Definir parâmetros do filtro
-N = 42; % Comprimento do filtro
-% 
-% % Calcular coeficientes do filtro Hamming
-% n = 0:N-1;
-% w = 0.54 - 0.46*cos(2*pi*n/(N-1));
-% 
-% % Normalizar coeficientes do filtro
-% w = w / sum(w);
-% 
-% % Calcular a resposta em frequência do filtro
-% H = fft(w);
-% 
-% % Aplicar filtro ao sinal de entrada
-% y_filtered = conv(y, w, 'same');
+%Definir parametros do filtro========================
+wan = 8*pi*fa/Fs;%Frequencia de atenuacao normalizada
+wrn = 8*pi*fr/Fs;%Frequencia de rejeicao normalizada
+wtn = 8*pi*ft/Fs;%Frequencia de transicao normalizada
+wcn = 8*pi*fc/Fs; %Frequencia de corte normalizada
+M = ceil(3.3*2*pi/wtn); % Comprimento do filtro
+N = M-1; % Ordem do filtro
+ideal_lp = wcn * sinc(wcn.*((0:N)-N/2));%Passa-baixas
+w = 0.54 - 0.46*cos(2*pi.*(0:N)/N); %Janela de Hamming
+figure();
+plot(ideal_lp);
 
-w = 0.54 - 0.46*cos(2*pi*(0:N-1)/(N-1));
-ideal_lp = 2*Fc/Fs * (sin(pi*(2*Fc/Fs*(-(N-1)/2:(N-1)/2))) / (pi*(2*Fc/Fs*(-(N-1)/2:(N-1)/2))));
-h = ideal_lp .* w';
-h = h / sum(h);
-y_filtered = filter(h, 1, y);
+
+figure();
+plot(w);
+
+h = ideal_lp .* w;
+figure();
+plot(h);
+
+y_filtered = conv(h,y);
+
+%Plotando o sinal filtrado
+figure('Name','Sinal filtrado no tempo');
+plot(y_filtered);
+xlabel('Tempo (S)');
+ylabel('Amplitude');
+
+
+Y_filtered = fft(y_filtered);
+figure('Name','Sinal Filtrado na frequ�ncia');
+func_plotter_freq("$f$(Hz)", "Magnitude", "Espectro do sinal de entrada filtrado", Y_filtered', Fs, fVals)
+
+figure('Name','Espectograma do Sinal Ruidoso');
+spectrogram(y,'yaxis')
+
+figure('Name','Espectograma do Sinal Filtrado');
+spectrogram(y_filtered,'yaxis')
 
 %Tocando o áudio
 sound(y_filtered, Fs);
+
+filename = 'SinalFiltrado.wav';
+audiowrite(filename,y_filtered,Fs);
