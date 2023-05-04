@@ -37,7 +37,7 @@ wan = 8*pi*fa/Fs;%Frequencia de atenuacao normalizada
 wrn = 8*pi*fr/Fs;%Frequencia de rejeicao normalizada
 wtn = 8*pi*ft/Fs;%Frequencia de transicao normalizada
 wcn = 8*pi*fc/Fs; %Frequencia de corte normalizada
-M = ceil(3.3*2*pi/wtn); % Comprimento do filtro
+M = ceil(8*pi/wtn); % Comprimento do filtro
 N = M-1; % Ordem do filtro
 ideal_lp = wcn * sinc(wcn.*((0:N)-N/2));%Passa-baixas
 w = 0.54 - 0.46*cos(2*pi.*(0:N)/N); %Janela de Hamming
@@ -64,11 +64,11 @@ grid on;
 
 %Gerando espectograma do sinal==========================
 figure('Name','Espectograma do Sinal Ruidoso');
-spectrogram(y, 'yaxis');
+%spectrogram(y, 'yaxis');
 grid on;
 
 figure('Name','Espectograma do Sinal Filtrado');
-spectrogram(y_filtered,'yaxis');
+%spectrogram(y_filtered,'yaxis');
 grid on;
 
 %Tocando o audio
