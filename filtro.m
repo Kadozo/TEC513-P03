@@ -35,7 +35,7 @@ fc = (fr+fa)/2;%Frequencia de corte
 
 wan = 8*pi*fa/Fs;%Frequencia de atenuacao normalizada
 wrn = 8*pi*fr/Fs;%Frequencia de rejeicao normalizada
-wtn = 8*pi*ft/Fs;%Frequencia de transicao normalizada
+wtn = 4*pi*ft/Fs;%Frequencia de transicao normalizada
 wcn = 8*pi*fc/Fs; %Frequencia de corte normalizada
 M = ceil(8*pi/wtn); % Comprimento do filtro
 N = M-1; % Ordem do filtro
@@ -64,11 +64,11 @@ grid on;
 
 %Gerando espectograma do sinal==========================
 figure('Name','Espectograma do Sinal Ruidoso');
-%spectrogram(y, 'yaxis');
+spectrogram(y, 256, [], [], Fs, 'yaxis');
 grid on;
 
 figure('Name','Espectograma do Sinal Filtrado');
-%spectrogram(y_filtered,'yaxis');
+spectrogram(y_filtered, 256, [], [], Fs, 'yaxis');
 grid on;
 
 %Tocando o audio
