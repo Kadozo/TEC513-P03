@@ -33,21 +33,31 @@ fa = 2600;%Frequencia de atenuacao
 ft = fr - fa;%Frequencia de transicao
 fc = (fr+fa)/2;%Frequencia de corte
 
-y = y * 2^(12);
 wan = 8*pi*fa/Fs;%Frequencia de atenuacao normalizada
 wrn = 8*pi*fr/Fs;%Frequencia de rejeicao normalizada
-wtn = 1.5*pi*ft/Fs;%Frequencia de transicao normalizada
+wtn = 4*pi*ft/Fs;%Frequencia de transicao normalizada
 wcn = 8*pi*fc/Fs; %Frequencia de corte normalizada
-M = ceil(4*pi/wtn); % Comprimento do filtro
+M = ceil(8*pi/wtn); % Comprimento do filtro
 N = M-1; % Ordem do filtro
 ideal_lp = wcn * sinc(wcn.*((0:N)-N/2));%Passa-baixas
+figure('Name','Filtro Ideal Passa-baixas');
+plot(ideal_lp);
+xlabel('n');
+ylabel('Amplitude');
 w = 0.54 - 0.46*cos(2*pi.*(0:N)/N); %Janela de Hamming
+figure('Name','Janela de Hamming');
+plot(w);
+xlabel('N');
+ylabel('Amplitude');
 h = ideal_lp .* w;
-
+figure('Name','Filtro - ');
+plot(w);
+xlabel('N');
+ylabel('Amplitude');
 
 %Filtrando o sinal======================================
 %Convolução entre o sinal no domínio no tempo e o filtro
-y_filtered = conv(h,y) / multiplicador;
+y_filtered = conv(h,y);
 
 %Plotando o sinal filtrado no tempo
 figure('Name','Sinal filtrado no tempo');
@@ -70,7 +80,7 @@ spectrogram(y, 256, [], [], Fs, 'yaxis');
 grid on;
 
 figure('Name','Espectograma do Sinal Filtrado');
-spectrogram(y_filtered,256, [], [], Fs, 'yaxis');
+spectrogram(y_filtered, 256, [], [], Fs, 'yaxis');
 grid on;
 
 %Tocando o audio
